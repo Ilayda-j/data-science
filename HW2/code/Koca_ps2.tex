@@ -1,0 +1,810 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={DS1000: Problem Set 2},
+  pdfauthor={Ilayda Koca},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{DS1000: Problem Set 2}
+\author{Ilayda Koca}
+\date{2022-09-14}
+
+\begin{document}
+\maketitle
+
+\hypertarget{getting-set-up}{%
+\subsection{Getting Set Up}\label{getting-set-up}}
+
+If you haven't already, create a folder for this course, and then a
+subfolder within for the second lecture \texttt{Topic4\_DataWrangling},
+and two additional subfolders within \texttt{code} and \texttt{data}.
+
+Open \texttt{RStudio} and create a new RMarkDown file (\texttt{.Rmd}) by
+going to
+\texttt{File\ -\textgreater{}\ New\ File\ -\textgreater{}\ R\ Markdown...}.
+Change the title to \texttt{"DS1000:\ Problem\ Set\ 2"} and the author
+to your full name. Save this file as \texttt{{[}LAST\ NAME{]}\_ps2.Rmd}
+to your \texttt{code} folder.
+
+If you haven't already, download the \texttt{MI2020\_ExitPoll.Rds} file
+from the course
+\href{https://github.com/jbisbee1/DS1000-F2022/blob/master/Lectures/Topic4_DataWrangling/data/MI2020_ExitPoll.rds}{github
+page} and save it to your \texttt{data} folder.
+
+\textbf{NB:} Please upload a \texttt{.pdf} version of your homework to
+Brightspace! To do so, you can either choose the \texttt{knit} dropdown
+of ``Knit to PDF'', or you can open the standard \texttt{.html} output
+in your browser, then click print and choose ``Print to PDF''.
+
+\hypertarget{question-1}{%
+\subsection{Question 1}\label{question-1}}
+
+Require \texttt{tidyverse} and load the \texttt{MI2020\_ExitPoll.Rds}
+data to \texttt{MI\_raw}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{require}\NormalTok{(tidyverse)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: tidyverse
+\end{verbatim}
+
+\begin{verbatim}
+## -- Attaching packages --------------------------------------- tidyverse 1.3.2 --
+## v ggplot2 3.3.6      v purrr   0.3.4 
+## v tibble  3.1.8      v dplyr   1.0.10
+## v tidyr   1.2.0      v stringr 1.4.1 
+## v readr   2.1.2      v forcats 0.5.2 
+## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{MI\_raw }\OtherTok{\textless{}{-}} \FunctionTok{readRDS}\NormalTok{(}\StringTok{\textquotesingle{}../data/MI2020\_ExitPoll.rds\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{question-2-1-point}{%
+\subsection{Question 2 {[}1 point{]}}\label{question-2-1-point}}
+
+How many voters were from Wayne County?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{MI\_raw }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{count}\NormalTok{(County) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(County }\SpecialCharTok{==} \StringTok{\textquotesingle{}WAYNE\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 2
+##   County     n
+##   <chr>  <int>
+## 1 WAYNE    102
+\end{verbatim}
+
+\begin{quote}
+\begin{itemize}
+\tightlist
+\item
+  There were 102 voters from Wayne County elections in the 2020
+  presidential elections of 2020.
+\end{itemize}
+\end{quote}
+
+\hypertarget{question-3-1-points}{%
+\subsection{Question 3 {[}1 points{]}}\label{question-3-1-points}}
+
+Who did the majority of surveyed voters support in the 2020 presidential
+election?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{MI\_raw }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{count}\NormalTok{(PRSMI20)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 6 x 2
+##   PRSMI20                                      n
+##   <dbl+lbl>                                <int>
+## 1 0 (NA) [Will/Did not vote for president]     6
+## 2 1 [Joe Biden, the Democrat]                723
+## 3 2 [Donald Trump, the Republican]           459
+## 4 7 [Undecided/Don’t know]                     4
+## 5 8 [Refused]                                 14
+## 6 9 [Another candidate]                       25
+\end{verbatim}
+
+\begin{quote}
+\begin{itemize}
+\tightlist
+\item
+  In the 2020 Michigan presidential elections, the majority of the
+  voters supported Joe Biden of the Democrat Party.
+\end{itemize}
+\end{quote}
+
+\hypertarget{question-4-2-points}{%
+\subsection{Question 4 {[}2 points{]}}\label{question-4-2-points}}
+
+What proportion of women supported Trump? What proportion of men
+supported Biden?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{MI\_raw }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(SEX) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{biden\_percentage =} \FunctionTok{mean}\NormalTok{(PRSMI20 }\SpecialCharTok{==} \DecValTok{1}\NormalTok{), }\AttributeTok{trump\_percentage =} \FunctionTok{mean}\NormalTok{(PRSMI20 }\SpecialCharTok{==} \DecValTok{2}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 2 x 3
+##   SEX        biden_percentage trump_percentage
+##   <dbl+lbl>             <dbl>            <dbl>
+## 1 1 [Male]              0.525            0.427
+## 2 2 [Female]            0.643            0.325
+\end{verbatim}
+
+\begin{quote}
+\begin{itemize}
+\tightlist
+\item
+  In the 2020 Michigan presidential elections, 32.5\% of women supported
+  Trump and 52.5\% of the men supported Biden.
+\end{itemize}
+\end{quote}
+
+\hypertarget{question-5-1-point}{%
+\subsection{Question 5 {[}1 point{]}}\label{question-5-1-point}}
+
+Create a new object called \texttt{MI\_clean} that contains only the
+following variables: - SEX, AGE10, PARTYID, EDUC18, PRSMI20, QLT20,
+LGBT, BRNAGAIN, LATINOS, QRACEAI, WEIGHT
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{MI\_clean }\OtherTok{\textless{}{-}}\NormalTok{ MI\_raw }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(SEX, AGE10, PARTYID, EDUC18, PRSMI20, QLT20, LGBT, BRNAGAIN, LATINOS, QRACEAI, WEIGHT)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{question-6-1-point}{%
+\subsection{Question 6 {[}1 point{]}}\label{question-6-1-point}}
+
+Which of these variables have missing data recorded as \texttt{NA}?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{MI\_clean }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{colSums}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(MI\_clean))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      SEX    AGE10  PARTYID   EDUC18  PRSMI20    QLT20     LGBT BRNAGAIN 
+##     1883    10434     2753     4048     2006       NA       NA       NA 
+##  LATINOS  QRACEAI   WEIGHT 
+##     2678     1935     1231
+\end{verbatim}
+
+\begin{quote}
+\begin{itemize}
+\tightlist
+\item
+  QLT20, LGBT, and BRNAGAIN variables have missing data recorded as NA.
+\end{itemize}
+\end{quote}
+
+\hypertarget{question-7-1-point}{%
+\subsection{Question 7 {[}1 point{]}}\label{question-7-1-point}}
+
+Are there \textbf{unit non-response} data in the \texttt{AGE10}
+variable? If so, how are they recorded?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{MI\_raw }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{count}\NormalTok{(AGE10)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 11 x 2
+##    AGE10                         n
+##    <dbl+lbl>                 <int>
+##  1  1 [18 and 24,]              33
+##  2  2 [25 and 29,]              28
+##  3  3 [30 and 34,]              42
+##  4  4 [35 and 39,]              46
+##  5  5 [40 and 44,]              78
+##  6  6 [45 and 49,]              83
+##  7  7 [50 and 59,]             274
+##  8  8 [60 and 64,]             143
+##  9  9 [65 and 74,]             290
+## 10 10 [75 or over?]            199
+## 11 99 [[DON'T READ] Refused]    15
+\end{verbatim}
+
+\begin{quote}
+\begin{itemize}
+\tightlist
+\item
+  There are 15 people who either refused to answer or didn't read the
+  question regarding sex at all. They are recorded so that the data is
+  not considered NA, but hints that the question might have been
+  confusing/embarrassing/frustrating to answer for 15 of the
+  respondents. ``{[}{[}DON'T READ{]} Refused{]}''
+\end{itemize}
+\end{quote}
+
+\hypertarget{question-8-1-point}{%
+\subsection{Question 8 {[}1 point{]}}\label{question-8-1-point}}
+
+What about in the PARTYID variable? How is unit non-response data
+recorded there?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{MI\_raw }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{count}\NormalTok{(PARTYID)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 5 x 2
+##   PARTYID                                 n
+##   <dbl+lbl>                           <int>
+## 1 1 [Democrat]                          425
+## 2 2 [Republican]                        280
+## 3 3 [Independent]                       416
+## 4 4 [Something else]                     94
+## 5 9 [[DON'T READ] Don’t know/refused]    16
+\end{verbatim}
+
+\begin{quote}
+\begin{itemize}
+\tightlist
+\item
+  There are 16 of unit non-response data recorded for the Party id
+  category. This data recorded in a way that reflects respondents who
+  couldn't answer the question either because they didn't know who to
+  vote for or they refused to answer because of a potential perceived
+  thread/humiliation/intrusion. ``{[}{[}DON'T READ{]} Don't
+  know/refused{]}''
+\end{itemize}
+\end{quote}
+
+\hypertarget{question-9-1-point}{%
+\subsection{Question 9 {[}1 point{]}}\label{question-9-1-point}}
+
+Let's create a new variable called \texttt{preschoice} that converts
+\texttt{PRSMI20} to a character. To do this, install the
+\texttt{sjlabelled} package and then create a new dataset called
+\texttt{lookup} that contains both the numeric value of the
+\texttt{PRSMI20} variable as well as the character label. Then merge
+this \texttt{lookup} dataframe to the \texttt{MI\_clean} \texttt{tibble}
+with \texttt{left\_join}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#sjlabelled library extracts the labels as chars}
+\NormalTok{sjlabelled}\SpecialCharTok{::}\FunctionTok{get\_labels}\NormalTok{(MI\_raw}\SpecialCharTok{$}\NormalTok{PRSMI20)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Will/Did not vote for president" "Joe Biden, the Democrat"        
+## [3] "Donald Trump, the Republican"    "Undecided/Don’t know"           
+## [5] "Refused"                         "Another candidate"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#create a new column that converts the value for PRSMI20 to the label}
+\CommentTok{\#to do this, create a lookup object containing the numeric values and labels for PRSMI20}
+\NormalTok{labels }\OtherTok{\textless{}{-}}\NormalTok{ sjlabelled}\SpecialCharTok{::}\FunctionTok{get\_labels}\NormalTok{(MI\_raw}\SpecialCharTok{$}\NormalTok{PRSMI20)}
+\NormalTok{values }\OtherTok{\textless{}{-}}\NormalTok{ sjlabelled}\SpecialCharTok{::}\FunctionTok{get\_values}\NormalTok{(MI\_raw}\SpecialCharTok{$}\NormalTok{PRSMI20)}
+\NormalTok{lookup }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{PRSMI20 =}\NormalTok{ values, }\AttributeTok{preschoice =}\NormalTok{ labels)}
+\NormalTok{lookup}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   PRSMI20                      preschoice
+## 1       0 Will/Did not vote for president
+## 2       1         Joe Biden, the Democrat
+## 3       2    Donald Trump, the Republican
+## 4       7            Undecided/Don’t know
+## 5       8                         Refused
+## 6       9               Another candidate
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#Now, we can merge our data with the look{-}up to attach the char column to preschoice}
+\CommentTok{\#to merge, use the left\_join() function}
+\NormalTok{MI\_raw }\OtherTok{\textless{}{-}}\NormalTok{ MI\_raw }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{left\_join}\NormalTok{(lookup,}\AttributeTok{by =} \FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}PRSMI20\textquotesingle{}} \OtherTok{=} \StringTok{\textquotesingle{}PRSMI20\textquotesingle{}}\NormalTok{))}
+
+\NormalTok{MI\_raw }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(PRSMI20,preschoice)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1,231 x 2
+##    PRSMI20                          preschoice                  
+##    <dbl+lbl>                        <chr>                       
+##  1 1 [Joe Biden, the Democrat]      Joe Biden, the Democrat     
+##  2 1 [Joe Biden, the Democrat]      Joe Biden, the Democrat     
+##  3 1 [Joe Biden, the Democrat]      Joe Biden, the Democrat     
+##  4 1 [Joe Biden, the Democrat]      Joe Biden, the Democrat     
+##  5 1 [Joe Biden, the Democrat]      Joe Biden, the Democrat     
+##  6 1 [Joe Biden, the Democrat]      Joe Biden, the Democrat     
+##  7 1 [Joe Biden, the Democrat]      Joe Biden, the Democrat     
+##  8 1 [Joe Biden, the Democrat]      Joe Biden, the Democrat     
+##  9 2 [Donald Trump, the Republican] Donald Trump, the Republican
+## 10 1 [Joe Biden, the Democrat]      Joe Biden, the Democrat     
+## # ... with 1,221 more rows
+\end{verbatim}
+
+\hypertarget{question-10-1-point}{%
+\subsection{Question 10 {[}1 point{]}}\label{question-10-1-point}}
+
+Do the same for the \texttt{QLT20} variable, the \texttt{AGE10}
+variable, and the \texttt{LGBT} variable. For each variable, make the
+character version \texttt{Qlty} for \texttt{QLT20}, \texttt{Age} for
+\texttt{AGE10}, and \texttt{Lgbt\_clean} for \texttt{LGBT}. EXTRA
+CREDIT: create a function to repeat this task easily.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#create a function to relabel data}
+\NormalTok{relabFn }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(data,column) \{ }
+\NormalTok{  labels }\OtherTok{\textless{}{-}}\NormalTok{ sjlabelled}\SpecialCharTok{::}\FunctionTok{get\_labels}\NormalTok{(data[[column]])}
+\NormalTok{  values }\OtherTok{\textless{}{-}}\NormalTok{ sjlabelled}\SpecialCharTok{::}\FunctionTok{get\_values}\NormalTok{(data[[column]])}
+  \FunctionTok{return}\NormalTok{(}\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{orig =}\NormalTok{ values,}\AttributeTok{lab =}\NormalTok{ labels))}
+\NormalTok{\}}
+
+\NormalTok{lookupAGE10 }\OtherTok{\textless{}{-}} \FunctionTok{relabFn}\NormalTok{(}\AttributeTok{data =}\NormalTok{ MI\_raw,}\AttributeTok{column =} \StringTok{\textquotesingle{}AGE10\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{rename}\NormalTok{(}\AttributeTok{AGE10 =}\NormalTok{ orig,}\AttributeTok{Age =}\NormalTok{ lab)}
+\NormalTok{lookupQLT20 }\OtherTok{\textless{}{-}} \FunctionTok{relabFn}\NormalTok{(}\AttributeTok{data =}\NormalTok{ MI\_raw,}\AttributeTok{column =} \StringTok{\textquotesingle{}QLT20\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{rename}\NormalTok{(}\AttributeTok{QLT20 =}\NormalTok{ orig,}\AttributeTok{Qlty =}\NormalTok{ lab)}
+\NormalTok{lookupLGBT }\OtherTok{\textless{}{-}} \FunctionTok{relabFn}\NormalTok{(}\AttributeTok{data =}\NormalTok{ MI\_raw,}\AttributeTok{column =} \StringTok{\textquotesingle{}LGBT\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{rename}\NormalTok{(}\AttributeTok{LGBT =}\NormalTok{ orig,}\AttributeTok{Lgbt\_clean =}\NormalTok{ lab)}
+
+\NormalTok{lookupAGE10}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    AGE10                  Age
+## 1      1           18 and 24,
+## 2      2           25 and 29,
+## 3      3           30 and 34,
+## 4      4           35 and 39,
+## 5      5           40 and 44,
+## 6      6           45 and 49,
+## 7      7           50 and 59,
+## 8      8           60 and 64,
+## 9      9           65 and 74,
+## 10    10          75 or over?
+## 11    99 [DON'T READ] Refused
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lookupQLT20}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   QLT20                            Qlty
+## 1     1           Can unite the country
+## 2     2              Is a strong leader
+## 3     3      Cares about people like me
+## 4     4               Has good judgment
+## 5     9 [DON'T READ] Don’t know/refused
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lookupLGBT}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   LGBT                      Lgbt_clean
+## 1    1                             Yes
+## 2    2                              No
+## 3    9 [DON'T READ] Don’t know/Refused
+\end{verbatim}
+
+\hypertarget{question-11-1-point}{%
+\subsection{Question 11 {[}1 point{]}}\label{question-11-1-point}}
+
+For each of these new variables, replace the missing data label with
+\texttt{NA}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{MI\_raw }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Qlty =} \FunctionTok{ifelse}\NormalTok{(QLT20 }\SpecialCharTok{==} \DecValTok{9}\NormalTok{ ,}\ConstantTok{NA}\NormalTok{, QLT20)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{count}\NormalTok{(Qlty)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 5 x 2
+##    Qlty     n
+##   <dbl> <int>
+## 1     1   125
+## 2     2   138
+## 3     3   121
+## 4     4   205
+## 5    NA   642
+\end{verbatim}
+
+\hypertarget{question-12-2-points}{%
+\subsection{Question 12 {[}2 points{]}}\label{question-12-2-points}}
+
+What proportion of LGBT-identifying voters supported Trump?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{MI\_raw }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(LGBT) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarize}\NormalTok{( }\AttributeTok{trump\_percentage =} \FunctionTok{mean}\NormalTok{(PRSMI20 }\SpecialCharTok{==} \DecValTok{2}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 4 x 2
+##   LGBT                                 trump_percentage
+##   <dbl+lbl>                                       <dbl>
+## 1  1 [Yes]                                        0.304
+## 2  2 [No]                                         0.382
+## 3  9 [[DON'T READ] Don’t know/Refused]            0.435
+## 4 NA                                              0.364
+\end{verbatim}
+
+\begin{quote}
+\begin{itemize}
+\tightlist
+\item
+  In the 2020 Michigan presidential elections, 30.4\% of the
+  LGBT-identifying voters supported Trump.
+\end{itemize}
+\end{quote}
+
+\hypertarget{question-13-2-points}{%
+\subsection{Question 13 {[}2 points{]}}\label{question-13-2-points}}
+
+Convert \texttt{AGE10} to a numeric variable and replace the missing
+data code with \texttt{NA}. What is the average age category in the
+data? What age bracket does this define?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{MI\_raw }\OtherTok{\textless{}{-}}\NormalTok{ MI\_raw }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{AGE\_new =} \FunctionTok{ifelse}\NormalTok{(AGE10 }\SpecialCharTok{==} \DecValTok{99}\NormalTok{,}\ConstantTok{NA}\NormalTok{,AGE10))}
+\NormalTok{MI\_raw }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{avgAge =} \FunctionTok{mean}\NormalTok{(AGE\_new,}\AttributeTok{na.rm=}\NormalTok{T))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 1
+##   avgAge
+##    <dbl>
+## 1   7.36
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{MI\_raw }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{count}\NormalTok{(AGE10)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 11 x 2
+##    AGE10                         n
+##    <dbl+lbl>                 <int>
+##  1  1 [18 and 24,]              33
+##  2  2 [25 and 29,]              28
+##  3  3 [30 and 34,]              42
+##  4  4 [35 and 39,]              46
+##  5  5 [40 and 44,]              78
+##  6  6 [45 and 49,]              83
+##  7  7 [50 and 59,]             274
+##  8  8 [60 and 64,]             143
+##  9  9 [65 and 74,]             290
+## 10 10 [75 or over?]            199
+## 11 99 [[DON'T READ] Refused]    15
+\end{verbatim}
+
+\begin{quote}
+\begin{itemize}
+\tightlist
+\item
+  The average age category in the data is 7.39 which indicates the age
+  bracket between the ages of 50-59.
+\end{itemize}
+\end{quote}
+
+\hypertarget{question-14-2-points}{%
+\subsection{Question 14 {[}2 points{]}}\label{question-14-2-points}}
+
+Plot the distribution of ages in the data. EXTRA CREDIT: color by the
+number of voters in each bracket that supported Trump, Biden, or someone
+else. Make sure to drop voters who didn't indicate who they voted for
+\textbf{AND} those who didn't indicate their age.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{MI\_raw }\OtherTok{\textless{}{-}}\NormalTok{ MI\_raw }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Age\_bar =} \FunctionTok{ifelse}\NormalTok{(AGE10 }\SpecialCharTok{==} \DecValTok{1}\NormalTok{, }\StringTok{"18{-}24"}\NormalTok{,}
+                          \FunctionTok{ifelse}\NormalTok{(AGE10 }\SpecialCharTok{==}\DecValTok{2}\NormalTok{, }\StringTok{"25{-}29"}\NormalTok{,}
+                                 \FunctionTok{ifelse}\NormalTok{(AGE10}\SpecialCharTok{==}\DecValTok{3}\NormalTok{,}\StringTok{"30{-}34"}\NormalTok{,}
+                                        \FunctionTok{ifelse}\NormalTok{(AGE10}\SpecialCharTok{==}\DecValTok{4}\NormalTok{,}\StringTok{"35{-}39"}\NormalTok{,}
+                                               \FunctionTok{ifelse}\NormalTok{(AGE10}\SpecialCharTok{==}\DecValTok{5}\NormalTok{,}\StringTok{"40{-}44"}\NormalTok{,}
+                                                      \FunctionTok{ifelse}\NormalTok{(AGE10}\SpecialCharTok{==}\DecValTok{6}\NormalTok{,}\StringTok{"45,49"}\NormalTok{,}
+                                                             \FunctionTok{ifelse}\NormalTok{(AGE10}\SpecialCharTok{==}\DecValTok{7}\NormalTok{, }\StringTok{"50,59"}\NormalTok{,}
+                                                                    \FunctionTok{ifelse}\NormalTok{(AGE10}\SpecialCharTok{==}\DecValTok{8}\NormalTok{, }\StringTok{"60,64"}\NormalTok{,}\FunctionTok{ifelse}\NormalTok{(AGE10}\SpecialCharTok{==}\DecValTok{9}\NormalTok{,}\StringTok{"65,74"}\NormalTok{,}\FunctionTok{ifelse}\NormalTok{(AGE10}\SpecialCharTok{==}\DecValTok{10}\NormalTok{,}\StringTok{"75+"}\NormalTok{,}\ConstantTok{NA}\NormalTok{)))))))))))}
+
+\NormalTok{MI\_raw }\OtherTok{\textless{}{-}}\NormalTok{ MI\_raw }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{preschoice2 =} \FunctionTok{ifelse}\NormalTok{(preschoice }\SpecialCharTok{==} \StringTok{"Refused"}\NormalTok{,}\ConstantTok{NA}\NormalTok{,}\FunctionTok{ifelse}\NormalTok{(preschoice }\SpecialCharTok{==} \StringTok{"Will/Did not vote for president"}\NormalTok{,}\ConstantTok{NA}\NormalTok{,}\FunctionTok{ifelse}\NormalTok{(preschoice }\SpecialCharTok{==} \StringTok{"Undecided/Don’t know"}\NormalTok{,}\ConstantTok{NA}\NormalTok{,preschoice))))}
+
+\NormalTok{MI\_raw }\OtherTok{\textless{}{-}}\NormalTok{ MI\_raw }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{preschoice2 =} \FunctionTok{ifelse}\NormalTok{(PRSMI20 }\SpecialCharTok{==} \DecValTok{7}\NormalTok{, }\ConstantTok{NA}\NormalTok{, preschoice2))}
+
+\NormalTok{MI\_raw }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(Age\_bar,preschoice2) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{count}\NormalTok{(Age\_bar) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{drop\_na}\NormalTok{(Age\_bar) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{drop\_na}\NormalTok{(preschoice2) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =} \FunctionTok{factor}\NormalTok{(Age\_bar),}\AttributeTok{y =}\NormalTok{ n, }\AttributeTok{fill =} \FunctionTok{factor}\NormalTok{(preschoice2))) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Koca_ps2_files/figure-latex/unnamed-chunk-14-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{MI\_raw }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{count}\NormalTok{(PRSMI20)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 6 x 2
+##   PRSMI20                                      n
+##   <dbl+lbl>                                <int>
+## 1 0 (NA) [Will/Did not vote for president]     6
+## 2 1 [Joe Biden, the Democrat]                723
+## 3 2 [Donald Trump, the Republican]           459
+## 4 7 [Undecided/Don’t know]                     4
+## 5 8 [Refused]                                 14
+## 6 9 [Another candidate]                       25
+\end{verbatim}
+
+\hypertarget{question-15-3-points}{%
+\subsection{Question 15 {[}3 points{]}}\label{question-15-3-points}}
+
+EXTRA CREDIT: In a two-way race (i.e., dropping those who voted for a
+candidate other than Biden or Trump), which age group most heavily
+favored Trump? Which most heavily favored Biden? Discuss some theories
+for why this might be the case. EXTRA \textbf{EXTRA} CREDIT: plot this
+answer.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{relabFn }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(data,column) \{ }
+\NormalTok{  labels }\OtherTok{\textless{}{-}}\NormalTok{ sjlabelled}\SpecialCharTok{::}\FunctionTok{get\_labels}\NormalTok{(data[[column]])}
+\NormalTok{  values }\OtherTok{\textless{}{-}}\NormalTok{ sjlabelled}\SpecialCharTok{::}\FunctionTok{get\_values}\NormalTok{(data[[column]])}
+  \FunctionTok{return}\NormalTok{(}\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{orig =}\NormalTok{ values,}\AttributeTok{lab =}\NormalTok{ labels))}
+\NormalTok{\}}
+
+\NormalTok{lookupAGE10 }\OtherTok{\textless{}{-}} \FunctionTok{relabFn}\NormalTok{(}\AttributeTok{data =}\NormalTok{ MI\_raw,}\AttributeTok{column =} \StringTok{\textquotesingle{}AGE10\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{rename}\NormalTok{(}\AttributeTok{AGE10 =}\NormalTok{ orig,}\AttributeTok{Age =}\NormalTok{ lab)}
+
+\CommentTok{\#}
+
+\NormalTok{MI\_raw }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{count}\NormalTok{(AGE10)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 11 x 2
+##    AGE10                         n
+##    <dbl+lbl>                 <int>
+##  1  1 [18 and 24,]              33
+##  2  2 [25 and 29,]              28
+##  3  3 [30 and 34,]              42
+##  4  4 [35 and 39,]              46
+##  5  5 [40 and 44,]              78
+##  6  6 [45 and 49,]              83
+##  7  7 [50 and 59,]             274
+##  8  8 [60 and 64,]             143
+##  9  9 [65 and 74,]             290
+## 10 10 [75 or over?]            199
+## 11 99 [[DON'T READ] Refused]    15
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{MI\_raw }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(AGE10) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarize}\NormalTok{( }\AttributeTok{trump\_percentage =} \FunctionTok{mean}\NormalTok{(PRSMI20 }\SpecialCharTok{==} \DecValTok{2}\NormalTok{), }\AttributeTok{biden\_percentage =} \FunctionTok{mean}\NormalTok{(PRSMI20 }\SpecialCharTok{==} \DecValTok{1}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 11 x 3
+##    AGE10                     trump_percentage biden_percentage
+##    <dbl+lbl>                            <dbl>            <dbl>
+##  1  1 [18 and 24,]                      0.242            0.727
+##  2  2 [25 and 29,]                      0.214            0.714
+##  3  3 [30 and 34,]                      0.357            0.571
+##  4  4 [35 and 39,]                      0.261            0.739
+##  5  5 [40 and 44,]                      0.423            0.526
+##  6  6 [45 and 49,]                      0.446            0.470
+##  7  7 [50 and 59,]                      0.434            0.544
+##  8  8 [60 and 64,]                      0.329            0.629
+##  9  9 [65 and 74,]                      0.331            0.628
+## 10 10 [75 or over?]                     0.392            0.578
+## 11 99 [[DON'T READ] Refused]            0.533            0.333
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{MI\_raw }\OtherTok{\textless{}{-}}\NormalTok{ MI\_raw }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{BidenVoter =} \FunctionTok{ifelse}\NormalTok{(}\FunctionTok{grepl}\NormalTok{(}\StringTok{\textquotesingle{}Biden\textquotesingle{}}\NormalTok{,preschoice),}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{),}
+         \AttributeTok{TrumpVoter =} \FunctionTok{ifelse}\NormalTok{(}\FunctionTok{grepl}\NormalTok{(}\StringTok{\textquotesingle{}Trump\textquotesingle{}}\NormalTok{,preschoice),}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{))}
+
+\NormalTok{MI\_raw }\OtherTok{\textless{}{-}}\NormalTok{ MI\_raw }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Age\_bar =} \FunctionTok{ifelse}\NormalTok{(AGE10 }\SpecialCharTok{==} \DecValTok{1}\NormalTok{, }\StringTok{"18{-}24"}\NormalTok{,}
+                          \FunctionTok{ifelse}\NormalTok{(AGE10 }\SpecialCharTok{==}\DecValTok{2}\NormalTok{, }\StringTok{"25{-}29"}\NormalTok{,}
+                                 \FunctionTok{ifelse}\NormalTok{(AGE10}\SpecialCharTok{==}\DecValTok{3}\NormalTok{,}\StringTok{"30{-}34"}\NormalTok{,}
+                                        \FunctionTok{ifelse}\NormalTok{(AGE10}\SpecialCharTok{==}\DecValTok{4}\NormalTok{,}\StringTok{"35{-}39"}\NormalTok{,}
+                                               \FunctionTok{ifelse}\NormalTok{(AGE10}\SpecialCharTok{==}\DecValTok{5}\NormalTok{,}\StringTok{"40{-}44"}\NormalTok{,}
+                                                      \FunctionTok{ifelse}\NormalTok{(AGE10}\SpecialCharTok{==}\DecValTok{6}\NormalTok{,}\StringTok{"45,49"}\NormalTok{,}
+                                                             \FunctionTok{ifelse}\NormalTok{(AGE10}\SpecialCharTok{==}\DecValTok{7}\NormalTok{, }\StringTok{"50,59"}\NormalTok{,}
+                                                                    \FunctionTok{ifelse}\NormalTok{(AGE10}\SpecialCharTok{==}\DecValTok{8}\NormalTok{, }\StringTok{"60,64"}\NormalTok{,}\FunctionTok{ifelse}\NormalTok{(AGE10}\SpecialCharTok{==}\DecValTok{9}\NormalTok{,}\StringTok{"65,74"}\NormalTok{,}\FunctionTok{ifelse}\NormalTok{(AGE10}\SpecialCharTok{==}\DecValTok{10}\NormalTok{,}\StringTok{"75+"}\NormalTok{,}\ConstantTok{NA}\NormalTok{)))))))))))}
+
+\NormalTok{MI\_raw }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{group\_by}\NormalTok{(Age\_bar,TrumpVoter) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{drop\_na}\NormalTok{(Age\_bar) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{count}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(Age\_bar) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{share =}\NormalTok{ n }\SpecialCharTok{/} \FunctionTok{sum}\NormalTok{(n)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =} \FunctionTok{reorder}\NormalTok{(Age\_bar,n), }\AttributeTok{y =}\NormalTok{ share, }\AttributeTok{fill =} \FunctionTok{factor}\NormalTok{(TrumpVoter))) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{\textquotesingle{}identity\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Koca_ps2_files/figure-latex/unnamed-chunk-15-1.pdf}
+
+\begin{quote}
+-The age group between 45-49 most heavily supported Trump. Voters
+between the ages of 25-29 most predominantly favored Biden in the
+Michigan 2020 Presidential Elections. The reason why younger people
+below the age 30 support Biden more heavily potentially because
+Millennials are more racilly diverse, more tuned in to power of networks
+and systems that make them more liberal as opposed to conservative. Plus
+they were found to favor government-run health care, student debt
+relief, marijuana legalization, and such issues that Democrats advocate
+for.
+\end{quote}
+
+\end{document}

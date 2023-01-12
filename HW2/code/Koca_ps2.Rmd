@@ -1,0 +1,265 @@
+---
+title: 'DS1000: Problem Set 2'
+author: "Ilayda Koca"
+date: "2022-09-14"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Getting Set Up
+
+If you haven't already, create a folder for this course, and then a subfolder within for the second lecture `Topic4_DataWrangling`, and two additional subfolders within `code` and `data`.
+
+Open `RStudio` and create a new RMarkDown file (`.Rmd`) by going to `File -> New File -> R Markdown...`.
+Change the title to `"DS1000: Problem Set 2"` and the author to your full name. Save this file as `[LAST NAME]_ps2.Rmd` to your `code` folder.
+
+If you haven't already, download the `MI2020_ExitPoll.Rds` file from the course [github page](https://github.com/jbisbee1/DS1000-F2022/blob/master/Lectures/Topic4_DataWrangling/data/MI2020_ExitPoll.rds) and save it to your `data` folder.
+
+**NB:** Please upload a `.pdf` version of your homework to Brightspace! To do so, you can either choose the `knit` dropdown of "Knit to PDF", or you can open the standard `.html` output in your browser, then click print and choose "Print to PDF".
+
+
+## Question 1
+Require `tidyverse` and load the `MI2020_ExitPoll.Rds` data to `MI_raw`.
+```{r}
+require(tidyverse)
+MI_raw <- readRDS('../data/MI2020_ExitPoll.rds')
+```
+
+
+## Question 2 [1 point]
+How many voters were from Wayne County?
+
+```{r}
+MI_raw %>%
+  count(County) %>%
+  filter(County == 'WAYNE')
+```
+
+> - There were 102 voters from Wayne County elections in the 2020 presidential elections of 2020.
+
+## Question 3 [1 points]
+Who did the majority of surveyed voters support in the 2020 presidential election?
+```{r}
+MI_raw %>%
+  count(PRSMI20)
+```
+
+> - In the 2020 Michigan presidential elections, the majority of the voters supported Joe Biden of the Democrat Party.
+
+## Question 4 [2 points]
+What proportion of women supported Trump? What proportion of men supported Biden?
+```{r}
+MI_raw %>%
+  group_by(SEX) %>%
+  summarize(biden_percentage = mean(PRSMI20 == 1), trump_percentage = mean(PRSMI20 == 2))
+```
+
+> - In the 2020 Michigan presidential elections, 32.5% of women supported Trump and 52.5% of the men supported Biden.
+
+## Question 5 [1 point]
+Create a new object called `MI_clean` that contains only the following variables:
+  - SEX, AGE10, PARTYID, EDUC18, PRSMI20, QLT20, LGBT, BRNAGAIN, LATINOS, QRACEAI, WEIGHT
+```{r}
+MI_clean <- MI_raw %>%
+  select(SEX, AGE10, PARTYID, EDUC18, PRSMI20, QLT20, LGBT, BRNAGAIN, LATINOS, QRACEAI, WEIGHT)
+```
+
+## Question 6 [1 point]
+Which of these variables have missing data recorded as `NA`?
+```{r}
+MI_clean %>%
+  colSums(is.na(MI_clean))
+
+```
+
+> - QLT20, LGBT, and BRNAGAIN variables have missing data recorded as NA.
+
+## Question 7 [1 point]
+Are there **unit non-response** data in the `AGE10` variable? If so, how are they recorded?
+
+```{r}
+MI_raw %>%
+  count(AGE10)
+```
+
+> - There are 15 people who either refused to answer or didn't read the question regarding sex at all. 
+They are recorded so that the data is not considered NA, but hints that the question might have been 
+confusing/embarrassing/frustrating to answer for 15 of the respondents. "[[DON'T READ] Refused]"
+
+## Question 8 [1 point]
+What about in the PARTYID variable? How is unit non-response data recorded there?
+```{r}
+MI_raw %>%
+  count(PARTYID)
+```
+
+> - There are 16 of unit non-response data recorded for the Party id category. This data recorded in a way that reflects respondents who couldn't answer the question either because they didn't know who to vote for or they refused to answer because of a potential perceived thread/humiliation/intrusion. "[[DON'T READ] Don’t know/refused]"
+
+## Question 9 [1 point]
+Let's create a new variable called `preschoice` that converts `PRSMI20` to a character. To do this, install the `sjlabelled` package and then create a new dataset called `lookup` that contains both the numeric value of the `PRSMI20` variable as well as the character label. Then merge this `lookup` dataframe to the `MI_clean` `tibble` with `left_join`.
+
+```{r}
+#sjlabelled library extracts the labels as chars
+sjlabelled::get_labels(MI_raw$PRSMI20)
+
+#create a new column that converts the value for PRSMI20 to the label
+#to do this, create a lookup object containing the numeric values and labels for PRSMI20
+labels <- sjlabelled::get_labels(MI_raw$PRSMI20)
+values <- sjlabelled::get_values(MI_raw$PRSMI20)
+lookup <- data.frame(PRSMI20 = values, preschoice = labels)
+lookup
+
+#Now, we can merge our data with the look-up to attach the char column to preschoice
+#to merge, use the left_join() function
+MI_raw <- MI_raw %>%
+  left_join(lookup,by = c('PRSMI20' = 'PRSMI20'))
+
+MI_raw %>%
+  select(PRSMI20,preschoice)
+
+```
+
+## Question 10 [1 point]
+Do the same for the `QLT20` variable, the `AGE10` variable, and the `LGBT` variable. For each variable, make the character version `Qlty` for `QLT20`, `Age` for `AGE10`, and `Lgbt_clean` for `LGBT`. EXTRA CREDIT: create a function to repeat this task easily.
+
+```{r}
+#create a function to relabel data
+relabFn <- function(data,column) { 
+  labels <- sjlabelled::get_labels(data[[column]])
+  values <- sjlabelled::get_values(data[[column]])
+  return(data.frame(orig = values,lab = labels))
+}
+
+lookupAGE10 <- relabFn(data = MI_raw,column = 'AGE10') %>%
+  rename(AGE10 = orig,Age = lab)
+lookupQLT20 <- relabFn(data = MI_raw,column = 'QLT20') %>%
+  rename(QLT20 = orig,Qlty = lab)
+lookupLGBT <- relabFn(data = MI_raw,column = 'LGBT') %>%
+  rename(LGBT = orig,Lgbt_clean = lab)
+
+lookupAGE10
+lookupQLT20
+lookupLGBT
+
+```
+
+## Question 11 [1 point]
+For each of these new variables, replace the missing data label with `NA`.
+
+```{r}
+  
+MI_raw %>%
+  mutate(Qlty = ifelse(QLT20 == 9 ,NA, QLT20)) %>%
+  count(Qlty)
+```
+
+## Question 12 [2 points]
+What proportion of LGBT-identifying voters supported Trump?
+
+```{r}
+MI_raw %>%
+  group_by(LGBT) %>%
+  summarize( trump_percentage = mean(PRSMI20 == 2))
+```
+
+> - In the 2020 Michigan presidential elections, 30.4% of the LGBT-identifying voters supported Trump. 
+
+## Question 13 [2 points]
+Convert `AGE10` to a numeric variable and replace the missing data code with `NA`. What is the average age category in the data? What age bracket does this define?
+
+```{r}
+
+MI_raw <- MI_raw %>%
+  mutate(AGE_new = ifelse(AGE10 == 99,NA,AGE10))
+MI_raw %>%
+  summarise(avgAge = mean(AGE_new,na.rm=T))
+
+MI_raw %>%
+  count(AGE10)
+```
+
+> - The average age category in the data is 7.39 which indicates the age bracket between the ages of 50-59.
+
+## Question 14 [2 points]
+Plot the distribution of ages in the data. EXTRA CREDIT: color by the number of voters in each bracket that supported Trump, Biden, or someone else. Make sure to drop voters who didn't indicate who they voted for **AND** those who didn't indicate their age.
+
+```{r}
+MI_raw <- MI_raw %>%
+  mutate(Age_bar = ifelse(AGE10 == 1, "18-24",
+                          ifelse(AGE10 ==2, "25-29",
+                                 ifelse(AGE10==3,"30-34",
+                                        ifelse(AGE10==4,"35-39",
+                                               ifelse(AGE10==5,"40-44",
+                                                      ifelse(AGE10==6,"45,49",
+                                                             ifelse(AGE10==7, "50,59",
+                                                                    ifelse(AGE10==8, "60,64",ifelse(AGE10==9,"65,74",ifelse(AGE10==10,"75+",NA)))))))))))
+
+MI_raw <- MI_raw %>%
+  mutate(preschoice2 = ifelse(preschoice == "Refused",NA,ifelse(preschoice == "Will/Did not vote for president",NA,ifelse(preschoice == "Undecided/Don’t know",NA,preschoice))))
+
+MI_raw <- MI_raw %>%
+  mutate(preschoice2 = ifelse(PRSMI20 == 7, NA, preschoice2))
+
+MI_raw %>%
+  group_by(Age_bar,preschoice2) %>%
+  count(Age_bar) %>%
+  drop_na(Age_bar) %>%
+  drop_na(preschoice2) %>%
+  ggplot(aes(x = factor(Age_bar),y = n, fill = factor(preschoice2))) +
+  geom_bar(stat = "identity")
+
+MI_raw %>%
+  count(PRSMI20)
+```
+
+## Question 15 [3 points]
+EXTRA CREDIT: In a two-way race (i.e., dropping those who voted for a candidate other than Biden or Trump), which age group most heavily favored Trump? Which most heavily favored Biden? Discuss some theories for why this might be the case. EXTRA **EXTRA** CREDIT: plot this answer.
+
+```{r}
+relabFn <- function(data,column) { 
+  labels <- sjlabelled::get_labels(data[[column]])
+  values <- sjlabelled::get_values(data[[column]])
+  return(data.frame(orig = values,lab = labels))
+}
+
+lookupAGE10 <- relabFn(data = MI_raw,column = 'AGE10') %>%
+  rename(AGE10 = orig,Age = lab)
+
+#
+
+MI_raw %>% 
+  count(AGE10)
+MI_raw %>%
+  group_by(AGE10) %>%
+  summarize( trump_percentage = mean(PRSMI20 == 2), biden_percentage = mean(PRSMI20 == 1))
+
+MI_raw <- MI_raw %>%
+  mutate(BidenVoter = ifelse(grepl('Biden',preschoice),1,0),
+         TrumpVoter = ifelse(grepl('Trump',preschoice),1,0))
+
+MI_raw <- MI_raw %>%
+  mutate(Age_bar = ifelse(AGE10 == 1, "18-24",
+                          ifelse(AGE10 ==2, "25-29",
+                                 ifelse(AGE10==3,"30-34",
+                                        ifelse(AGE10==4,"35-39",
+                                               ifelse(AGE10==5,"40-44",
+                                                      ifelse(AGE10==6,"45,49",
+                                                             ifelse(AGE10==7, "50,59",
+                                                                    ifelse(AGE10==8, "60,64",ifelse(AGE10==9,"65,74",ifelse(AGE10==10,"75+",NA)))))))))))
+
+MI_raw %>% 
+  group_by(Age_bar,TrumpVoter) %>%
+  drop_na(Age_bar) %>%
+  count() %>%
+  group_by(Age_bar) %>%
+  mutate(share = n / sum(n)) %>%
+  ggplot(aes(x = reorder(Age_bar,n), y = share, fill = factor(TrumpVoter))) +
+  geom_bar(stat = 'identity')
+```
+
+> -The age group between 45-49 most heavily supported Trump. Voters between the ages of 25-29 most predominantly favored Biden in the Michigan 2020 Presidential Elections. The reason why younger people below the age 30 support Biden more heavily potentially because Millennials are more racilly diverse, more tuned in to power of networks and systems that make them more liberal as opposed to conservative. Plus they were found to favor government-run health care, student debt relief, marijuana legalization, and such issues that Democrats advocate for.

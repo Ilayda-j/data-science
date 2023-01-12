@@ -1,0 +1,96 @@
+---
+title: "Koca_ps1.Rmd"
+author: "Ilayda Koca"
+institute: "Vanderbilt University"
+date: "Due Date: 2022/09/11 @ 6PM CST"
+output:
+  html_document:
+    self_contained: yes
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Assignment 1
+
+## Question 1 [1 point]
+*Require `tidyverse` and load the `sc_debt.Rds` data by assigning it to an object named `df`.*
+```{r}
+require(tidyverse)
+
+df <- readRDS("../data/sc_debt.Rds")
+```
+
+
+## Question 2 [2 points]
+*Which school has the lowest admission rate?*
+```{r}
+df%>%
+  filter(adm_rate > 0) %>%
+  arrange(adm_rate) %>%
+  select(instnm,adm_rate)
+```
+
+> - Hampshire College
+
+## Question 3 [2 points]
+*Which are the top 10 schools by average SAT score?*
+```{r}
+df%>%
+  arrange(-sat_avg) %>%
+  select(instnm,sat_avg)
+```
+
+## Question 4 [2 points]
+*Which state is home to the school with the largest median earnings of recent graduates, and how much did they make?*
+```{r}
+df%>%
+  arrange(-md_earn_wne_p6) %>%
+  select(instnm,stabbr,md_earn_wne_p6)
+```
+
+> - MO (Missouri), 120400 dollars a year.
+
+## Question 5 [2 points]
+*What is the average SAT score of the school with the highest median earnings identified in question 4?*
+```{r}
+df%>%
+  filter(str_detect(instnm,"Pharmacy in St. Louis")) %>%
+  arrange(-md_earn_wne_p6) %>%
+  select(instnm,sat_avg)
+```
+
+> - 1262
+
+## Question 6 [2 points]
+*Calculate the average SAT score and median earnings of recent graduates by state.*
+```{r}
+df %>% 
+group_by(stabbr)  %>%
+summarise(average_sat = mean(sat_avg,na.rm=T),median_earnings = mean(md_earn_wne_p6,na.rm=T))
+
+```
+
+## Question 7 [2 points]
+*Plot the average SAT score (x-axis) against the median earnings of recent graduates (y-axis) by school.*
+```{r}
+df %>%
+  ggplot(aes(x = sat_avg,y = md_earn_wne_p6)) + geom_point(color = 'red')
+```
+
+## Question 8 [4 points]
+*Plot the average SAT score (x-axis) against the median earnings of recent graduates (y-axis) by **STATE**. (Extra credit: plot the line of best fit.)*
+```{r}
+df %>%
+  ggplot(aes(x = sat_avg,y = md_earn_wne_p6, color = stabbr)) +
+  geom_point() +
+  geom_smooth(method = 'lm',se = F)
+```
+
+## Question 9 [4 points]
+*What relationship do you observe? Why do you think this relationship exists?*
+
+> - The best fit lines to the data in the "median earnings of recent grads vs average sat" graph have positive slope, suggesting that there is a positive correlation between median earnings of recent grads and average sat scores of students. This relationship might exist because students who score higher in high school level exams, including the SAT, also do better in college classes, scoring higher GPA, and therefore get higher paying jobs. Although there is a positive correlation, we can not deduce a causation relationship, such as "scoring higher in the SAT results in higher future earning." 
+

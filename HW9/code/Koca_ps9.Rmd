@@ -1,0 +1,515 @@
+---
+title: "PS 9"
+author: "Ilayda Koca"
+date: "2022-11-14"
+output: html_document
+---
+## Getting Set Up
+
+If you haven't already, create a folder for this course, and then a subfolder called `Topic10_Classification`, and two additional subfolders within `code` and `data`.
+
+Open `RStudio` and create a new RMarkDown file (`.Rmd`) by going to `File -> New File -> R Markdown...`.
+Change the title to `"DS1000: Problem Set 9"` and the author to your full name. Save this file as `[LAST NAME]_ps9.Rmd` to your `code` folder.
+
+If you haven't already, download the `admit_data.rds` file from the course [github page](https://github.com/jbisbee1/DS1000-F2022/blob/master/Lectures/Topic10_Classification/data/admit_data.rds) and save it to your `data` folder.
+
+All of the following questions should be answered using 
+
+Require the `tidyverse` & `tidymodels` packages, and load the `admit_data.rds` data to `ad`. Finally, `set.seed(123)` once at the very beginning, to ensure consistency in results throughout the problem set.
+```{r}
+require(tidyverse)
+require(tidymodels)
+ad <-  readRDS('../data/admit_data.rds')
+set.seed(123)
+glimpse(ad)
+```
+
+
+## Question 1 [4 points + 3 EC points]
+Plot the univariate visualizations for `yield`, `income`, and `sat`. Justify your choices for how you are visualizing these variables. Then plot the conditional variation between `yield` and `income`, and `yield` and `sat`. Again, justify your choices and then interpret the results. Do these variables matter for `yield`?
+
+EXTRA CREDIT (+1 point): Explain the pattern you observe in the uni-variate visualization of the SAT scores. What might explain this? 
+
+EXTRA CREDIT (+2 points): Look at these same conditional relationships between `yield` and `income` and `sat`, except divide the continuous measures of `income` and `sat` into deciles using the `ntile()` function, and create a single heatmap for all three variables, where the deciles of `income` and `sat` are on the axes, and the tiles are shaded by the average attendance in each cell. Which students are most likely to attend? Which are least likely to attend? Can you determine whether income or SAT scores matter more for attendance based on this plot?
+
+**HINTS**:
+
+* Univariate Description [part 1](https://www.jamesbisbee.com/DS1000-F2022/Lectures/Topic5_UnivariateDescription/code/Topic5_UnivariateDescription_part1_slides.html#1) and Univariate Visualization [part 2](https://www.jamesbisbee.com/DS1000-F2022/Lectures/Topic6_UnivariateVisualization/code/Topic6_UnivariateVisualization_part2_slides.html#1)
+* Conditional Variation [part 1](https://www.jamesbisbee.com/DS1000-F2022/Lectures/Topic7_ConditionalVariation/code/Topic7_ConditionalVariation_part1_slides.html#1) and [part 2](https://www.jamesbisbee.com/DS1000-F2022/Lectures/Topic7_ConditionalVariation/code/Topic7_ConditionalVariation_part2_slides.html#5)
+- [Heatmap example](https://www.jamesbisbee.com/DS1000-F2022/Lectures/Topic10_Classification/code/Topic10_Classification_part1_slides.html#69)
+
+```{r}
+p1 <- ad %>%
+  ggplot(aes(x=yield)) +
+  geom_bar() +
+  labs(x = 'Yield',
+       y = 'Count',
+       title = 'Univariate Visualization of the Yield Variable',
+       subtitle = 'In the admit_data.rds Database')
+
+p1
+
+p2 <- ad %>%
+  ggplot(aes(x=income)) +
+  geom_density() +
+  labs(x = 'Income',
+       y = 'Density',
+       title = 'Univariate Visualization of the Income Variable',
+       subtitle = 'In the admit_data.rds Database')
+
+p2
+
+p3 <- ad %>%
+  ggplot(aes(x=sat)) +
+  geom_density() +
+  labs(x = 'Sat Score',
+       y = 'Density',
+       title = 'Univariate Visualization of the Sat Variable',
+       subtitle = 'In the admit_data.rds Database')
+
+p3
+
+p4 <- ad %>% 
+    ggplot(aes(x= factor(yield), y = income)) +
+    geom_violin(fill = "slateblue",alpha = .5) +
+    scale_x_discrete(name = 'Yield',labels = c('No Attend','Attend')) + 
+    labs(x = 'Yield',
+       y = 'Income',
+       title = 'Multi-variate Visualization of the Income and Yield Variables ',
+       subtitle = 'In the admit_data.rds Database')
+p4
+
+p5 <- ad %>% 
+    ggplot(aes(x= factor(yield), y = sat)) +
+    geom_violin(fill = "slateblue",alpha = .5) +
+    scale_x_discrete(name = 'Yield',labels = c('No Attend','Attend')) + 
+    labs(x = 'Yield',
+       y = 'Sat Score',
+       title = 'Multi-variate Visualization of the Sat and Yield Variables ',
+       subtitle = 'In the admit_data.rds Database')
+    
+p5
+
+```
+
+```{r}
+## Extra credit
+# Look at these same conditional relationships between `yield` and `income` and `sat`, except divide the continuous measures of `income` and `sat` into deciles using the `ntile()` function
+
+p6 <- ad %>%
+  mutate(sat_quintile=ntile(sat,n=5)) %>%
+  mutate(attandence = ifelse(yield == 1, "attend", "not-attend")) %>%
+  ggplot(aes(x= sat_quintile, fill = attandence)) +
+  geom_bar() +
+  labs(x = 'Sat Score by Percentiles',
+       y = 'Yield',
+       title = 'Multi-variate Visualization of the Sat Score and Yield Variables by Percentiles',
+       subtitle = 'In the admit_data.rds Database')
+
+p6
+
+p7 <- ad %>%
+  mutate(income_quintile=ntile(income,n=5)) %>%
+  mutate(attandence = ifelse(yield == 1, "attend", "not-attend")) %>%
+  ggplot(aes(x= income_quintile, fill = attandence)) +
+  geom_bar() +
+  labs(x = 'Family Income by Percentiles',
+       y = 'Yield',
+       title = 'Multi-variate Visualization of the Family Income and Yield Variables by Percentiles',
+       subtitle = 'In the admit_data.rds Database')
+
+p7
+
+```
+
+```{r}
+# Create a single heat-map for all three variables, where the deciles of `income` and `sat` are on the axes, and the tiles are shaded by the average attendance in each cell.
+require(ggridges)
+
+p <- ad %>%
+  mutate(sat_decile = ntile(sat,n=10)) %>%
+  mutate(income_decile = ntile(income,n=10)) %>%
+  group_by(sat_decile,income_decile) %>%
+  summarise(pr_attend = mean(yield),.groups = 'drop') %>%
+  ggplot(aes(x = sat_decile, y = income_decile,
+             fill = pr_attend)) + 
+  geom_tile() + 
+  scale_fill_gradient(limits = c(0,1)) + 
+  theme_ridges() +
+  labs(title = 'Heat-Map Visualization of Average Attandence by Aat and Income Variables ',
+       subtitle = 'In the admit_data.rds Database')
+
+p
+```
+
+> - Yield is a binary categorical variable, therefore I used a bar plot to do the uni-variate visualization. Income variable holds continuous double values, so I used a density plot to visualize the income variable. Similarly, sat stores continuous double values, so density plot was the appropriate way of visualizing the uni-variate analysis.
+
+> - For the multivariate visualization of sat and yield, I used two violin plots each representing a value of the yield variable (0 on the left and 1 on the right). Since sat is a continuous variable, violin plot was useful in representing the density distribution of sat scores across each yield category. Similarly for the multivariate visualization of sat and income, I used two violin plots each representing a value of the yield variable (0 on the left and 1 on the right). Since income is a continuous variable, violin plot was useful in representing the density distribution of family income across each yield category.
+
+> - EXTRA CREDIT (+1 point): The density plot of the uni-variate visualization of the sat scores shows an almost normal distribution with a slight right skew meaning that there were a few students that performed better than the average sat taker (more than 1400), skewing data to the right. This might be due to to fact that only a few talented students with high academic acumen get proper exam prep to perform close to perfect score while the rest/most of the students have average talent and get average level education. 
+
+> - EXTRA CREDIT (+2 point): According to the multivariate visualization of the "Attendance by Sat Score Percentiles" and the "Attendance by Family Income Percentile" suggests a positive correlation exists between both sat scores and attendance and family income and attendance. In other words, the higher a students scores on SAT, the higher attendance chances they have. Similarly, the higher incomes a student's family earns, the higher attendance chances they have. It is important, however, to note that the family income is a better predictor of college attendance than sat scores since no one in the highest 20 percentile of family income got rejected and no one in the higher lowest 20 percentile of family income got accepted while the lowest and highest percentiles for sat scores have a more diverse distribution in yield.
+
+## Question 2 [4 points]
+Now start with the simplest way of predicting attendance: the conditional mean. Specifically, calculate declines for `income` and `sat` called `incomeDec` and `satDec` using the `ntile()` function. Then calculate the average attendance in each cell using `group_by()` and `mutate()`, and finally predict attendance as 1 if the average is greater than 0.5, and 0 otherwise, using an `ifelse()` function. Evaluate the performance in terms of **accuracy**, **sensitivity**, and **specificity**. Finally, define these terms and describe your results for a general audience reader who doesn't understand statistics.
+
+**HINTS**:
+
+* [Conditional means](https://www.jamesbisbee.com/DS1000-F2022/Lectures/Topic10_Classification/code/Topic10_Classification_part1_slides.html#72)
+* [Sensitivity & Specificity](https://www.jamesbisbee.com/DS1000-F2022/Lectures/Topic10_Classification/code/Topic10_Classification_part1_slides.html#90)
+
+```{r}
+ad <- ad %>%
+  mutate(satDec = ntile(sat,n = 10),
+         incomeDec = ntile(income,n = 10)) %>%
+  group_by(satDec,incomeDec) %>%
+  mutate(prob_attend = mean(yield)) %>%
+  ungroup() %>%
+  mutate(pred_attend = ifelse(prob_attend > .5,1,0))
+
+ad %>%
+  group_by(yield,pred_attend) %>%
+  summarise(nStudents = n())
+
+#accuracy
+accuracy <- ad %>%
+  group_by(yield) %>%
+  mutate(total_attend = n()) %>%
+  group_by(yield,pred_attend,total_attend) %>%
+  summarise(nStudents=n(),.groups = 'drop') %>%
+  mutate(prop = nStudents / total_attend) %>%
+  mutate(accuracy = percent(sum((yield == pred_attend)*nStudents) / sum(nStudents)))
+
+accuracy
+
+#sensitivity
+sensitivity <- ad %>%
+  group_by(yield) %>%
+  filter(yield == 1) %>%
+  mutate(total_attend = n()) %>%
+  group_by(yield,pred_attend,total_attend) %>%
+  summarise(nStudents=n(),.groups = 'drop') %>%
+  mutate(prop = nStudents / total_attend) %>%
+  mutate(accuracy = percent(sum((yield == pred_attend)*nStudents) / sum(nStudents)))
+
+sensitivity
+
+#specificity
+specificity <- ad %>%
+  group_by(yield) %>%
+  filter(yield == 0) %>%
+  mutate(total_attend = n()) %>%
+  group_by(yield,pred_attend,total_attend) %>%
+  summarise(nStudents=n(),.groups = 'drop') %>%
+  mutate(prop = nStudents / total_attend) %>%
+  mutate(specificity = percent(sum((yield == pred_attend)*nStudents) / sum(nStudents)))
+
+specificity
+
+```
+
+> - Accuracy calculates the overall prediction including the prediction of both the attendees and the non-attendees. Sensitivity describes how accurate the prediction was in terms of correctly predicting the attendees and attendees alone. Conversely, specificity describes how accurate the prediction of the non-attendees was without taking the attendees into consideration. 
+
+> - The accuracy of our predictions was 83% when we predicted attendance based on the factors of family income and sat scores. This means that overall, for the 83% of the data points, the predicted attendance value was the same as the actual attendance value. In other words, our prediction model incorrectly predicted attending students as non-attending and non-attending students as attending only for 17% of the time in total.
+
+> - The sensitivity of our predictions was 86% when we predicted attendance based on the factors of family income and sat scores. This means that when we limited the data to only the students that are attending, our data was able to correctly predict for the 86% of the time that the student was attending. In other words, our prediction model incorrectly predicted an attending student to be non-attending for only 14% of the time.
+
+> - The specificity of our predictions was 78% when we predicted attendance based on the factors of family income and sat scores. This means that when we limited the data to only the students that are non-attending, our data was able to correctly predict the attendance status of a student for 78% of the time. In other words, our prediction model incorrectly predicted an non-attending student to be attending for only 22% of the time.
+
+## Question 3 [4 points]
+Now predict whether students will attend using a linear regression model (using the `lm()` function) that predicts `yield` as a function of `income` and `sat` (**not** using deciles, just the continuous versions). Calculate **accuracy**, **sensitivity**, and **specificity** from this model where the threshold is again 0.5, and compare to the results from Question 3. Does this model do better?
+
+**HINTS**:
+
+* [Linear regression for classification](https://www.jamesbisbee.com/DS1000-F2022/Lectures/Topic10_Classification/code/Topic10_Classification_part1_slides.html#81)
+
+
+```{r}
+mLM <- lm(yield ~ sat + income, ad)
+summary(mLM)
+ad %>%
+  mutate(preds = predict(mLM)) %>%
+  mutate(predBinary = ifelse(preds > .5,1,0)) %>%
+  select(yield,predBinary,preds)
+
+accuracy <- ad %>%
+  mutate(pred_attend = ifelse(predict(mLM) > .5,1,0)) %>%
+  group_by(yield) %>%
+  mutate(total_attend = n()) %>%
+  group_by(yield,pred_attend,total_attend) %>%
+  summarise(nStudents=n(),.groups = 'drop') %>%
+  mutate(prop = nStudents / total_attend) %>%
+  ungroup() %>%
+  mutate(accuracy = percent(sum((yield == pred_attend)*nStudents) / sum(nStudents)))
+
+accuracy
+
+sensitivity <- ad %>%
+  mutate(pred_attend = ifelse(predict(mLM) > .5,1,0)) %>%
+  group_by(yield) %>%
+  filter(yield == 1) %>%
+  mutate(total_attend = n()) %>%
+  group_by(yield,pred_attend,total_attend) %>%
+  summarise(nStudents=n(),.groups = 'drop') %>%
+  mutate(prop = nStudents / total_attend) %>%
+  ungroup() %>%
+  mutate(sensitivity = percent(sum((yield == pred_attend)*nStudents) / sum(nStudents)))
+
+sensitivity
+
+specificity <- ad %>%
+  mutate(pred_attend = ifelse(predict(mLM) > .5,1,0)) %>%
+  group_by(yield) %>%
+  filter(yield == 0) %>%
+  mutate(total_attend = n()) %>%
+  group_by(yield,pred_attend,total_attend) %>%
+  summarise(nStudents=n(),.groups = 'drop') %>%
+  mutate(prop = nStudents / total_attend) %>%
+  ungroup() %>%
+  mutate(specificity = percent(sum((yield == pred_attend)*nStudents) / sum(nStudents)))
+
+specificity
+```
+
+> - In terms of the overall accuracy the linear regression model does a worse job at prediction (80% accuracy) than the most basic conditional mean predictions (83% accuracy). For the sensitivity measure, the linear regression model does a better job at prediction (92% accuracy) than the most basic conditional mean predictions (86% accuracy). Finally, for the specificity measure, linear regression model does a worse job at prediction (54% accuracy) than the most basic conditional mean predictions (78% accuracy).
+
+## Question 4 [4 points]
+Now recalculate **sensitivity**, **specificity**, and **accuracy** using different thresholds, ranging from 0 to 1, incrementing by 0.025 (use the `seq(from,to,by)` function). Plot the relationship between these thresholds and both the sensitivity and the specificity. What is the optimal threshold to balance the trade-off between **sensitivity** and **specificity**? Then plot ROC Curve and calculate the AUC. 
+
+**HINTS**:
+
+* [Threshold loop](https://www.jamesbisbee.com/DS1000-F2022/Lectures/Topic10_Classification/code/Topic10_Classification_part1_slides.html#95)
+* [ROC](https://www.jamesbisbee.com/DS1000-F2022/Lectures/Topic10_Classification/code/Topic10_Classification_part1_slides.html#97)
+* [AUC](https://www.jamesbisbee.com/DS1000-F2022/Lectures/Topic10_Classification/code/Topic10_Classification_part1_slides.html#103)
+
+
+```{r}
+# The Threshold loop
+toplot <- NULL
+for(thresh in seq(0,1,by = .025)) {
+  toplot <- ad %>%
+  mutate(pred_attend = ifelse(predict(mLM) > thresh,1,0)) %>%
+  group_by(yield) %>%
+  mutate(total_attend = n()) %>%
+  group_by(yield,pred_attend,total_attend) %>%
+  summarise(nStudents=n(),.groups = 'drop') %>%
+  mutate(prop = nStudents / total_attend) %>%
+  ungroup() %>%
+  mutate(accuracy = sum((yield == pred_attend)*nStudents) / sum(nStudents)) %>%
+  mutate(threshold = thresh) %>%
+    bind_rows(toplot)
+}
+
+toplot %>%
+  mutate(metric = ifelse(yield == 1 & pred_attend == 1,'Sensitivity',
+                         ifelse(yield == 0 & pred_attend == 0,'Specificity',NA))) %>%
+  drop_na(metric) %>%
+  ggplot(aes(x = threshold,y = prop,color = metric)) + 
+  geom_line() + 
+  theme_ridges()
+```
+
+```{r}
+#Roc Curve
+p <- toplot %>%
+  mutate(metric = ifelse(yield == 1 & pred_attend == 1,'Sensitivity',
+                         ifelse(yield == 0 & pred_attend == 0,'Specificity',NA))) %>%
+  drop_na(metric) %>%
+  select(prop,metric,threshold) %>%
+  spread(metric,prop) %>%
+  ggplot(aes(x = 1-Specificity,y = Sensitivity)) + 
+  geom_line() + 
+  xlim(c(0,1)) + ylim(c(0,1)) + 
+  geom_abline(slope = 1,intercept = 0,linetype = 'dotted') + 
+  theme_ridges()
+p
+
+#Auc Measure
+roc_auc(data = ad %>%
+  mutate(pred_attend = predict(mLM),
+         truth = factor(yield,levels = c('1','0'))) %>%
+  select(truth,pred_attend),truth,pred_attend)
+```
+
+> - The lines of sensitivity and specificity intersect at around the threshold value of 0.6. This means that the threshold value with the most accurate values of both sensitivity and specificity is 0.6.
+
+## Question 5 [4 points]
+Re-do questions 3 and 4 using a logistic regression. Does this perform better than a linear regression model?
+
+**HINTS**:
+
+* [Logit regression](https://www.jamesbisbee.com/DS1000-F2022/Lectures/Topic10_Classification/code/Topic10_Classification_part2_slides.html#35)
+
+```{r}
+# Train model
+mLogit <- glm(formula = yield ~ sat + income,data = ad,family = binomial(link = 'logit'))
+
+# Predict model
+ad <- ad %>%
+  mutate(prob_attend = predict(mLogit,type = 'response')) %>%
+  mutate(pred_attend = ifelse(prob_attend > .5,1,0))
+
+# Evaluate model
+acc <- ad %>%
+  group_by(yield) %>%
+  mutate(total_attend = n()) %>%
+  group_by(yield,pred_attend,total_attend) %>%
+  summarise(nStudents=n(),.groups = 'drop') %>%
+  mutate(prop = nStudents / total_attend) %>%
+  ungroup() %>%
+  mutate(accuracy = percent(sum((yield == pred_attend)*nStudents) / sum(nStudents)))
+
+acc
+
+sen <- ad %>%
+  group_by(yield) %>%
+  filter(yield == 1) %>%
+  mutate(total_attend = n()) %>%
+  group_by(yield,pred_attend,total_attend) %>%
+  summarise(nStudents=n(),.groups = 'drop') %>%
+  mutate(prop = nStudents / total_attend) %>%
+  ungroup() %>%
+  mutate(sensitivity = percent(sum((yield == pred_attend)*nStudents) / sum(nStudents)))
+
+sen
+
+spe <- ad %>%
+  group_by(yield) %>%
+  filter(yield == 0) %>%
+  mutate(total_attend = n()) %>%
+  group_by(yield,pred_attend,total_attend) %>%
+  summarise(nStudents=n(),.groups = 'drop') %>%
+  mutate(prop = nStudents / total_attend) %>%
+  ungroup() %>%
+  mutate(specificity = percent(sum((yield == pred_attend)*nStudents) / sum(nStudents)))
+
+spe
+```
+
+```{r}
+#Roc Curve
+toplot2 <- NULL
+for(thresh in seq(0,1,by = .025)) {
+  toplot2 <- ad %>%
+    mutate(pred_attend = ifelse(predict(mLogit,type = 'response') > thresh,1,0)) %>%
+    group_by(yield) %>%
+    mutate(total_attend = n()) %>%
+    group_by(yield,pred_attend,total_attend) %>%
+    summarise(nStudents=n(),.groups = 'drop') %>%
+    mutate(prop = nStudents / total_attend) %>%
+    ungroup() %>%
+    mutate(threshold = thresh) %>%
+    bind_rows(toplot2)
+}
+
+p2 <- toplot2 %>%
+  mutate(metric = ifelse(yield == 1 & pred_attend == 1,'Sensitivity',
+                         ifelse(yield == 0 & pred_attend == 0,'Specificity',NA))) %>%
+  drop_na(metric) %>%
+  select(prop,metric,threshold) %>%
+  spread(metric,prop) %>%
+  ggplot(aes(x = 1-Specificity,y = Sensitivity)) + 
+  geom_line() + 
+  xlim(c(0,1)) + ylim(c(0,1)) + 
+  geom_abline(slope = 1,intercept = 0,linetype = 'dotted')
+
+p2
+
+#Auc Measure
+roc_auc(data = ad %>%
+  mutate(prob_attend = predict(mLogit,type = 'response'),
+         truth = factor(yield,levels = c('1','0'))) %>%
+  select(truth,prob_attend),truth,prob_attend)
+```
+
+> - The AUC measure measures the total area under the ROC curve where the ROC curve is given as a Sensitivity versus Specificity graph. Better models always have a high levels of both sensitivity and specificity. Given all, we can conclude that models with higher AUC measures are better (more accurate) at predictions. Our linear regression model that predicted attendance based on the factors of sat scores and family income had an AUC measure of 87, while the logistic regression model that predicted attendance based on the factors of sat scores and family income had an AUC measure of 89. This shows that the logarithmic model did a better job at accurately predicting yield based on family income and sat scores.
+
+## Question 6  [4 extra credit points]
+
+Now redo questions 3 and 4 using a random forest via the `ranger` package. Interpret the results. Why should we not be over-excited by the AUC in this approach? What might you do to fix this issue?
+
+```{r}
+require(ranger)
+
+# Train model
+mRange <- ranger(yield ~ sat + income, ad)
+
+# Predict model
+pred <- predict(mRange,data = ad)
+ad <- ad %>%
+  mutate(prob_attend = pred$predictions) %>%
+  mutate(pred_attend = ifelse(prob_attend > .5,1,0))
+
+# Evaluate model
+acc <- ad %>%
+  group_by(yield) %>%
+  mutate(total_attend = n()) %>%
+  group_by(yield,pred_attend,total_attend) %>%
+  summarise(nStudents=n(),.groups = 'drop') %>%
+  mutate(prop = nStudents / total_attend) %>%
+  ungroup() %>%
+  mutate(accuracy = percent(sum((yield == pred_attend)*nStudents) / sum(nStudents)))
+
+acc
+
+sen <- ad %>%
+  group_by(yield) %>%
+  filter(yield == 1) %>%
+  mutate(total_attend = n()) %>%
+  group_by(yield,pred_attend,total_attend) %>%
+  summarise(nStudents=n(),.groups = 'drop') %>%
+  mutate(prop = nStudents / total_attend) %>%
+  ungroup() %>%
+  mutate(sensitivity = percent(sum((yield == pred_attend)*nStudents) / sum(nStudents)))
+
+sen
+
+spe <- ad %>%
+  group_by(yield) %>%
+  filter(yield == 0) %>%
+  mutate(total_attend = n()) %>%
+  group_by(yield,pred_attend,total_attend) %>%
+  summarise(nStudents=n(),.groups = 'drop') %>%
+  mutate(prop = nStudents / total_attend) %>%
+  ungroup() %>%
+  mutate(specificity = percent(sum((yield == pred_attend)*nStudents) / sum(nStudents)))
+
+spe
+
+#Roc Curve
+toplot3 <- NULL
+for(thresh in seq(0,1,by = .025)) {
+  toplot3 <- ad %>%
+    mutate(pred_attend = ifelse(pred$predictions > thresh,1,0)) %>%
+    group_by(yield) %>%
+    mutate(total_attend = n()) %>%
+    group_by(yield,pred_attend,total_attend) %>%
+    summarise(nStudents=n(),.groups = 'drop') %>%
+    mutate(prop = nStudents / total_attend) %>%
+    ungroup() %>%
+    mutate(threshold = thresh) %>%
+    bind_rows(toplot3)
+}
+
+p3 <- toplot3 %>%
+  mutate(metric = ifelse(yield == 1 & pred_attend == 1,'Sensitivity',
+                         ifelse(yield == 0 & pred_attend == 0,'Specificity',NA))) %>%
+  drop_na(metric) %>%
+  select(prop,metric,threshold) %>%
+  spread(metric,prop) %>%
+  ggplot(aes(x = 1-Specificity,y = Sensitivity)) + 
+  geom_line() + 
+  xlim(c(0,1)) + ylim(c(0,1)) + 
+  geom_abline(slope = 1,intercept = 0,linetype = 'dotted')
+
+p3
+
+#Auc Measure
+roc_auc(data = ad %>%
+  mutate(prob_attend = pred$predictions,
+         truth = factor(yield,levels = c('1','0'))) %>%
+  select(truth,prob_attend),truth,prob_attend)
+
+```
+
+> - The AUC of 99.98 might be worrisome since no prediction is perfect. 

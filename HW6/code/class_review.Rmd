@@ -1,0 +1,107 @@
+---
+title: "class review reg8"
+author: "Ilayda Koca"
+date: "2022-10-28"
+output: html_document
+---
+  
+```{r}
+require(tidyverse)
+require(scales)
+mv<-readRDS("../data/mv.Rds")
+
+mv %>%
+  select(score,runtime) 
+
+mvAnalysis <- mv %>%
+  select(score,runtime) %>%
+  drop_na()
+
+m1 <- lm(score ~ runtime,mvAnalysis)
+
+pred_vals <- predict(m1)
+
+errors <- resid(m1)
+
+
+mvAnalysis$pred_vals <- pred_vals
+
+mvAnalysis$errors <- mvAnalysis$score - mvAnalysis$pred_vals
+
+mvAnalysis <- mvAnalysis %>%
+  mutate(errors = score - pred_vals)
+
+# Univariate visualization of the errors
+mvAnalysis %>%
+  ggplot(aes(x = errors)) + 
+  geom_density() + 
+  geom_vline(xintercept = 0,linetype = 'dashed') + 
+  geom_vline(xintercept = mean(mvAnalysis$errors),
+             color = 'red',size = 3,alpha = .6)
+
+# Multivariate visualization of the errors
+mvAnalysis %>%
+  ggplot(aes(x = runtime,y = errors)) + 
+  geom_point() + 
+  geom_hline(yintercept = 0,linetype = 'dashed') + 
+  geom_smooth()
+
+
+mv %>%
+  ggplot(aes(x = budget)) + 
+  geom_histogram() + 
+  scale_x_log10()
+
+
+mv <- mv %>%
+  mutate(log_budget = log(budget))
+
+# Multivariate visualization
+mv %>%
+  ggplot(aes(x = log_budget,y = score)) + 
+  geom_point() + 
+  geom_smooth()
+
+# missingness
+mv %>%
+  count(is.na(log_budget))
+
+# look at missingness by rating
+mv %>%
+  # filter(is.na(log_budget)) %>%
+  ggplot(aes(x = rating,
+             fill = is.na(log_budget))) + 
+  geom_bar(position = 'fill')
+
+
+mv %>%
+  filter(is.na(log_budget)) %>%
+  ggplot(aes(x = year)) + 
+  geom_bar()
+
+
+
+
+# RMSE
+mvAnalysis <- mv %>%
+  select(log_budget,score) %>%
+  drop_na()
+
+m2 <- lm(score ~ log_budget,mvAnalysis)
+summary(m2)
+
+# RMSE
+e <- resid(m2)
+se <- e^2
+mse <- mean(se)
+rmse <- sqrt(mse)
+
+mvAnalysis <- mv %>%
+  select(score,log_budget,bechdel_score) %>%
+  drop_na()
+
+m3 <- lm(score ~ bechdel_score,mvAnalysis)
+
+sqrt(mean(resid(m3)^2))
+  
+```

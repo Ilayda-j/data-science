@@ -1,0 +1,371 @@
+---
+title: "Problem Set 10"
+author: "Ilayda Koca"
+date: "2022-11-29"
+output: html_document
+---
+## Getting Set Up
+
+If you haven't already, create a folder for this course, and then a subfolder called `Topic10_Classification`, and two additional subfolders within `code` and `data`.
+
+Open `RStudio` and create a new RMarkDown file (`.Rmd`) by going to `File -> New File -> R Markdown...`.
+Change the title to `"DS1000: Problem Set 10"` and the author to your full name. Save this file as `[LAST NAME]_ps10.Rmd` to your `code` folder.
+
+If you haven't already, download the `admit_data.rds` file from the course [github page](https://github.com/jbisbee1/DS1000-F2022/blob/master/Lectures/Topic10_Classification/data/admit_data.rds) and save it to your `data` folder.
+
+```{r,include=F}
+knitr::opts_chunk$set(error=TRUE)
+```
+
+Require `tidyverse`, `tidymodels`, and `modelr` and then load the `admit_data.rds` data to `ad`. Finally, `set.seed(123)` once at the very beginning, to ensure consistency in results throughout the problem set.
+```{r}
+require(tidyverse)
+require(tidymodels)
+require(modelr)
+ad <-  readRDS('../data/admit_data.rds')
+set.seed(123)
+glimpse(ad)
+```
+
+
+## Question 1 [4 points]
+
+Create a classification algorithm using linear regression that predicts attendance (`yield`) as a function of the following $X$ predictors:
+
+- `distance`
+- `income`
+- `sat`
+- `gpa`
+- `visit`
+- `registered`
+- `legacy`
+- `net_price`
+
+Evaluate the model performance using `roc_auc` based on cross validation with 100 iterations, using an 80-20% split of the data. Then run a second algorithm that is identical to the first in every way, except that `income` is logged (`log_income = log(income)`). Compare the average AUC for the two models and discuss which is better.
+
+**HINTS**:
+
+* [Linear regression for classification](https://www.jamesbisbee.com/DS1000-F2022/Lectures/Topic10_Classification/code/Topic10_Classification_part1_slides.html#81)
+
+* [Cross validation loop](https://www.jamesbisbee.com/DS1000-F2022/Lectures/Topic10_Classification/code/Topic10_Classification_part3_slides.html#23)
+
+```{r,warning=FALSE}
+# Create a classification algorithm using linear regression that predicts a attendance (`yield`)
+mLM <- lm(yield ~ distance + income + sat + gpa + visit + registered + net_price + legacy,ad)
+
+ad %>%
+  mutate(pred_attend = ifelse(predict(mLM) > .5,1,0)) %>%
+  group_by(yield) %>%
+  mutate(total_attend = n()) %>%
+  group_by(yield,pred_attend,total_attend) %>%
+  summarise(nStudents=n(),.groups = 'drop') %>%
+  mutate(prop = nStudents / total_attend) %>%
+  ungroup() %>%
+  mutate(accuracy = percent(sum((yield == pred_attend)*nStudents) / sum(nStudents)))
+
+# Income not logged (both linear and logarithmic)
+bsRes <- NULL
+for(i in 1:100) {
+  # Cross validation prep
+  inds <- sample(1:nrow(ad),size = round(nrow(ad)*.8),replace = F)
+  train <- ad %>% slice(inds)
+  test <- ad %>% slice(-inds)
+  # Training models
+  mLM <- lm(yield ~ distance + income + sat + gpa + visit + registered + net_price + legacy,train)
+  mLG <- glm(yield ~ distance + income + sat + gpa + visit + registered + net_price + legacy,train,family = binomial(link = 'logit'))
+  
+  # Predicting models
+  pred <- test %>%
+    mutate(predLM = predict(mLM,newdata = test),
+           predLG = predict(mLG,newdata = test, type = 'response'),
+           truth = factor(yield,levels = c('1','0')))
+  # Evaluating models
+  resLG <- roc_auc(data = pred,truth = 'truth',estimate = 'predLG') %>%
+    mutate(algo = 'logit')
+  resLM <- roc_auc(data = pred,truth = 'truth',estimate = 'predLM') %>%
+    mutate(algo = 'linear') 
+  bsRes <- resLG %>% bind_rows(resLM) %>% bind_rows(bsRes)
+}
+
+bsRes %>%
+  ggplot(aes(x = .estimate,fill = algo)) + 
+  geom_density(alpha = .4) +
+  labs(x = 'AUC Measure',
+       y = 'Density',
+       title = 'Linear and Logarithmic Regression Model Performance',
+       subtitle = 'of Logit Variable as a Function of Distance, Income, Sat, Gpa, Visit, Registered, Net_price, Legacy')
+
+# Logged income (both linear and logorithmic)
+bsRes2 <- NULL
+for(i in 1:100) {
+  # Cross validation prep
+  inds <- sample(1:nrow(ad),size = round(nrow(ad)*.8),replace = F)
+  train <- ad %>% slice(inds)
+  test <- ad %>% slice(-inds)
+  # Training models
+  mLM <- lm(yield ~ distance + log(income) + sat + gpa + visit + registered + net_price + legacy,train)
+  mLG <- glm(yield ~ distance + log(income) + sat + gpa + visit + registered + net_price + legacy,train,family = binomial(link = 'logit'))
+  
+  # Predicting models
+  pred <- test %>%
+    mutate(predLM = predict(mLM,newdata = test),
+           predLG = predict(mLG,newdata = test, type = 'response'),
+           truth = factor(yield,levels = c('1','0')))
+  # Evaluating models
+  resLG <- roc_auc(data = pred,truth = 'truth',estimate = 'predLG') %>%
+    mutate(algo = 'logit')
+  resLM <- roc_auc(data = pred,truth = 'truth',estimate = 'predLM') %>%
+    mutate(algo = 'linear') 
+  bsRes2 <- resLG %>% bind_rows(resLM) %>% bind_rows(bsRes2)
+}
+
+bsRes2 %>%
+  ggplot(aes(x = .estimate,fill = algo)) + 
+  geom_density(alpha = .4) +
+  labs(x = 'AUC Measure',
+       y = 'Density',
+       title = 'Linear/Logarithmic Regression Model Performance w/logged(income)',
+       subtitle = 'of Logit Variable as a Function of Distance, Income, Sat, Gpa, Visit, Registered, Net_price, Legacy')
+
+```
+
+> - When we take a look at the above two density graphs with a focus on the linear regression AUC Measure densities, the graph with the logged income variable is more right skewed, meaning that the regression with the logged income variable results in better predictions. Since the average AUC measure for the logged income graph is higher, the prediction for that model is better.
+
+## Question 2 [4 points]
+
+Re-do question 1 but use a logistic regression instead of a linear regression. Including the response to Question 1, you should end up with 100 AUC scores for each of the four algorithms by the end of this question:
+
+- `lm` with raw `income`
+- `lm` with `log_income`
+- `glm` with raw `income`
+- `glm` with `log_income`
+
+Plot these AUC scores using `geom_boxplot()`, and discuss which of the four algorithms performs best. 
+
+**NB:** Make sure that `warning = F` in the first part of the beginning of the `r` code chunk!
+
+**HINTS**:
+
+* [Logit regression](https://www.jamesbisbee.com/DS1000-F2022/Lectures/Topic10_Classification/code/Topic10_Classification_part2_slides.html#35)
+
+
+```{r,warning = F}
+
+# Income not logged (both linear and logarithmic)
+bsRes <- NULL
+for(i in 1:100) {
+  # Cross validation prep
+  inds <- sample(1:nrow(ad),size = round(nrow(ad)*.8),replace = F)
+  train <- ad %>% slice(inds)
+  test <- ad %>% slice(-inds)
+  # Training models
+  mLM <- lm(yield ~ distance + income + sat + gpa + visit + registered + net_price + legacy,train)
+  mLG <- glm(yield ~ distance + income + sat + gpa + visit + registered + net_price + legacy,train,family = binomial(link = 'logit'))
+  
+  # Predicting models
+  pred <- test %>%
+    mutate(predLM = predict(mLM,newdata = test),
+           predLG = predict(mLG,newdata = test, type = 'response'),
+           truth = factor(yield,levels = c('1','0')))
+  # Evaluating models
+  resLG <- roc_auc(data = pred,truth = 'truth',estimate = 'predLG') %>%
+    mutate(algo = 'logit')
+  resLM <- roc_auc(data = pred,truth = 'truth',estimate = 'predLM') %>%
+    mutate(algo = 'linear') 
+  bsRes <- resLG %>% bind_rows(resLM) %>% bind_rows(bsRes)
+}
+
+bsRes %>%
+    ggplot(aes(x = .estimate,fill = algo)) + 
+    geom_boxplot(alpha = .4) +
+    labs(x = 'AUC Measure',
+       y = 'Distribution',
+       title = 'Linear and Logarithmic Regression Model Performance',
+       subtitle = 'of Logit Variable as a Function of Distance, Income, Sat, Gpa, Visit, Registered, Net_price, Legacy')
+
+# Logged income (both linear and logarithmic)
+bsRes2 <- NULL
+for(i in 1:100) {
+  # Cross validation prep
+  inds <- sample(1:nrow(ad),size = round(nrow(ad)*.8),replace = F)
+  train <- ad %>% slice(inds)
+  test <- ad %>% slice(-inds)
+  # Training models
+  mLM <- lm(yield ~ distance + log(income) + sat + gpa + visit + registered + net_price + legacy,train)
+  mLG <- glm(yield ~ distance + log(income) + sat + gpa + visit + registered + net_price + legacy,train,family = binomial(link = 'logit'))
+  
+  # Predicting models
+  pred <- test %>%
+    mutate(predLM = predict(mLM,newdata = test),
+           predLG = predict(mLG,newdata = test, type = 'response'),
+           truth = factor(yield,levels = c('1','0')))
+  # Evaluating models
+  resLG <- roc_auc(data = pred,truth = 'truth',estimate = 'predLG') %>%
+    mutate(algo = 'logit')
+  resLM <- roc_auc(data = pred,truth = 'truth',estimate = 'predLM') %>%
+    mutate(algo = 'linear') 
+  bsRes2 <- resLG %>% bind_rows(resLM) %>% bind_rows(bsRes2)
+}
+bsRes2 %>%
+    ggplot(aes(x = .estimate,fill = algo)) + 
+    geom_boxplot(alpha = .4) +
+    labs(x = 'AUC Measure',
+       y = 'Distribution',
+       title = 'Linear/Logarithmic Regression Model Performance w/log(income)',
+       subtitle = 'of Logit Variable as a Function of Distance, Income, Sat, Gpa, Visit, Registered, Net_price, Legacy')
+```
+
+> - According to the above two box-plot graphs, the box-plot of the logarithmic logged income variable is the most right shifted out of the four box-plots given, meaning that the logarithmic regression with the logged income variable results in better predictions. Since the average AUC measure for the logarithmic regression with logged income graph is higher, the prediction for that model is better.
+
+## Question 3 [4 points]
+
+Based on the result to question 2, choose the best classification algorithm and train it on the full data. Calculate the specificity and sensitivity across different thresholds ranging from zero to one, and plot these as different colored lines, just as you did in PSet 9, Q4. What is the optimal threshold to balance the trade-off between sensitivity and specificity based on this plot? **HINT**: Use `geom_vline()` and test different `xintercept` values until you nail the intersection between the two lines.
+
+**HINTS**:
+
+* [Threshold loop](https://www.jamesbisbee.com/DS1000-F2022/Lectures/Topic10_Classification/code/Topic10_Classification_part1_slides.html#95)
+
+
+```{r,warning = F}
+mLogit <- glm(formula = yield ~ sat + legacy + visit + registered + income + gpa + distance + net_price, data = ad, family = binomial(link = 'logit'))
+
+toplot <- NULL
+for(thresh in seq(0,1,by = .025)) {
+  toplot <- ad %>%
+  mutate(pred_attend = ifelse(predict(mLogit, type = 'response') > thresh,1,0)) %>%
+  group_by(yield) %>%
+  mutate(total_attend = n()) %>%
+  group_by(yield,pred_attend,total_attend) %>%
+  summarise(nStudents=n(),.groups = 'drop') %>%
+  mutate(prop = nStudents / total_attend) %>%
+  ungroup() %>%
+  mutate(accuracy = sum((yield == pred_attend)*nStudents) / sum(nStudents)) %>%
+  mutate(threshold = thresh) %>%
+    bind_rows(toplot)
+}
+
+toplot %>%
+  mutate(metric = ifelse(yield == 1 & pred_attend == 1,'Sensitivity',
+                         ifelse(yield == 0 & pred_attend == 0,'Specificity',NA))) %>%
+  drop_na(metric) %>%
+  ggplot(aes(x = threshold,y = prop,color = metric)) + 
+  geom_line() + 
+  geom_vline(xintercept = 0.615)
+  theme_ridges() +
+  labs(y = 'AUC Measure Density',
+       x = 'Threshold Value',
+       title = 'Sensitivity and Specificity Auc Measures',
+       subtitle = 'at Different Threshold Values')
+```
+
+
+> - The optimal threshold to balance the trade-off between sensitivity and specificity based on the above plot is a threshold value of 0.615.
+
+## Question 4 [4 points + 1 extra credit]
+
+Try to increase the number of admitted students with incomes under \$50,000 by 200. To do this, you will first need to calculate the total number of admitted students currently with incomes under \$50,000, in order to know what number you should target. Then, create a hypothetical dataset using `data_grid()` and set `net_price` to be \$5k cheaper for those with incomes less than \$50k. Calculate the predicted number of admitted students with incomes less than \$50k by using the optimal threshold identified in Q3. Does reducing the price for lower-income students by \$5k achieve the goal of 200 more admits in this category? If not, try tweaking the price further until you achieve the goal. Is this possible? EXTRA CREDIT: Explain why the current number of attending students under \$50k is larger than the predicted number of attending students after reducing `net_price` by \$5,000.
+
+**HINTS**:
+
+* [Predicting on hypothetical data via `data_grid()`](https://www.jamesbisbee.com/DS1000-F2022/Lectures/Topic10_Classification/code/Topic10_Classification_part3_slides.html#37)
+
+* [Predicting on hypothetical raw data](https://www.jamesbisbee.com/DS1000-F2022/Lectures/Topic10_Classification/code/Topic10_Classification_part3_slides.html#51)
+
+
+```{r}
+form <- 'yield ~ distance + income + sat + gpa + visit + registered + legacy + net_price'
+
+mLG <- glm(form, data = ad, family = binomial(link = 'logit'))
+
+ad <- ad %>%
+  mutate(income_group = ifelse(income < 50000, 'low', 'high'))
+
+m1 <- ad %>%
+  group_by(income_group) %>%
+  count(yield)
+
+m1
+
+hyp0 <- ad %>%
+  mutate(net_price = ifelse(income_group == 'low', net_price - 5000, net_price))
+
+hyp0 %>%
+  mutate(preds = predict(mLG, newdata = hyp0, type = 'response')) %>%
+  mutate(pred_class = ifelse(preds > 0.615, 1, 0)) %>%
+  count(income_group, pred_class)
+
+hyp <- ad %>%
+  mutate(net_price = ifelse(income_group == 'low', net_price - 48700, net_price))
+
+hyp %>%
+  mutate(preds = predict(mLG, newdata = hyp, type = 'response')) %>%
+  mutate(pred_class = ifelse(preds > 0.615, 1, 0)) %>%
+  count(income_group, pred_class)
+```
+
+> - With the initial price, the number of attending students from the lower income families is 77. According to our prediction model, in order to increase the number of attending students from lower income families by 200 students, the price of attending should be decreased by 48.700$. Reducing the price for lower-income students by \$5k did not achieve the goal of 200 more admits. The current number of attending students under \$50k is larger than the predicted number of attending students after reducing `net_price` by \$5,000 because decreasing the attendance cost by $5k also causes more students from higher incoming families to attend. This change result in there being less available seats for students from lower income families anymore, therefore reducing the attending number of students from lower income families.
+
+## Question 5 [4 points]
+
+Re-do question 4, while also achieving the college's two constraints: 
+
+1. Maintain total revenues of at least \$30m
+2. Maintain total attendance at least 1,466
+
+Is this possible to achieve?
+
+```{r}
+hypo_data <- ad %>%
+  mutate(net_price = ifelse(income < 50000, net_price - 49000, 
+                            ifelse(income >=50000 & income < 200000, net_price - 9000, 
+                                   ifelse(income >= 200000, net_price + 60000,
+                                          net_price))))
+
+mLGFinal <- glm(yield ~ sat + legacy + visit + registered + income + gpa + distance + net_price, data = ad, family = binomial(link = 'logit'))
+
+hypo_data %>%
+  mutate(preds = predict(mLGFinal, newdata = hypo_data, type = 'response')) %>%
+  mutate(pred_class = ifelse(preds > 0.615, 1, 0)) %>%
+  filter(pred_class == 1, income < 50000) %>%
+  count()
+
+hypo_data %>%
+  mutate(preds = predict(mLGFinal, newdata = hypo_data, type = 'response')) %>%
+  mutate(pred_class = ifelse(preds > 0.615, 1, 0)) %>%
+  filter(pred_class == 1) %>%
+  summarise(tot_rev = scales::dollar(sum(net_price)), totAttend = n())
+```
+
+> - To increase the number of attending students from lower income families by 200 students while at the same time keeping the two constraints mentioned above, the attendance fee for higher income family students should be increased. Our prediction model attains two constraints and the goal by decreasing fees for lower incoming students by $49k, decreasing fees for middle incoming students (50,000 < income < 200,000) by $9k, and increasing the fees for higher incoming students by $60k. Without tweaking the fee value for higher income family students, the goal is very difficult to to achieve because when trying out smaller reductions in the net price like \$5k, our attendance goal of having 200 more admits of low-income students and total attendance is not met, but the revenue goal gets closer to be met. But when trying out larger reduction in the net price like \$49k, our attendance goal of having 200 more admits of lower-income students may be met as well as the total attendance, but the revenue goal in particular is not met. So overall the conditions are hard to be met.
+
+## Question 6 [4 EC points]
+
+Now try and achieve BOTH goals subject to BOTH constraints. Specifically:
+
+1. **Goal:** Increase average SAT to 1300
+2. **Goal:** Increase lower-income students by 200
+3. **Constraint:** Maintain revenues of at least \$30m
+4. **Constraint:** Maintain total attendees of roughly 1,466
+
+```{r}
+hypo_data2 <- ad %>%
+  mutate(net_price = ifelse(income < 50000, net_price - 49000, 
+                            ifelse(income >=50000 & income < 200000, net_price - 9000, 
+                                   ifelse(income >= 200000, net_price + 60000,
+                                          net_price)))) %>%
+  filter(gpa == 4.0)
+
+mLGFinal <- glm(yield ~ sat + legacy + visit + registered + income + gpa + distance + net_price, data = ad, family = binomial(link = 'logit'))
+
+hypo_data2 %>%
+  mutate(preds = predict(mLGFinal, newdata = hypo_data2, type = 'response')) %>%
+  mutate(pred_class = ifelse(preds > 0.615, 1, 0)) %>%
+  filter(pred_class == 1, income < 50000) %>%
+  count()
+
+hypo_data2 %>%
+  mutate(preds = predict(mLGFinal, newdata = hypo_data2, type = 'response')) %>%
+  mutate(pred_class = ifelse(preds > 0.615, 1, 0)) %>%
+  filter(pred_class == 1) %>%
+  summarise(satAvg = round(mean(sat)), tot_rev = scales::dollar(sum(net_price)), totAttend = n())
+```
